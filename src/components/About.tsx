@@ -1,5 +1,4 @@
 import React from 'react';
-import aboutImage from '../assets/about.png';
 
 const About: React.FC = () => {
   return (

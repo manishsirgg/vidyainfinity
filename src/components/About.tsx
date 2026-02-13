@@ -12,10 +12,10 @@ const About: React.FC = () => {
             <div className="absolute -top-8 -left-8 w-40 h-40 bg-blue-100 rounded-full blur-2xl"></div>
             <div className="relative rounded-3xl overflow-hidden shadow-2xl">
               <img
-                src={aboutImage}
-                alt="About Vidya Infinity"
-                className="w-full h-[500px] object-cover"
-              />
+  src="/about.png"
+  alt="About Vidya Infinity"
+  className="rounded-3xl shadow-2xl relative z-10 w-full h-[500px] object-cover"
+/>
             </div>
           </div>
 

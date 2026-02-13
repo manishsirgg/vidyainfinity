@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
 </a>
 
 <a 
-  href={SOCAL_LINKS.instagram}
+  href={SOCIAL_LINKS.instagram}
   target="_blank" 
   rel="noopener noreferrer"
   className="w-10 h-10 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"
@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
 </a>
 
 <a 
-  href={SOCAL_LINKS.linkedin}
+  href={SOCIAL_LINKS.linkedin}
   target="_blank" 
   rel="noopener noreferrer"
   className="w-10 h-10 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"
@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
 </a>
 
 <a 
-  href={SOCAL_LINKS.x}
+  href={SOCIAL_LINKS.x}
   target="_blank" 
   rel="noopener noreferrer"
   className="w-10 h-10 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"

@@ -52,15 +52,18 @@ const Contact: React.FC = () => {
             </h3>
 
             <form
-              name="admission-inquiry"
+              action="https://formspree.io/f/mjgeylzp"
               method="POST"
-              data-netlify="true"
-              netlify-honeypot="bot-field"
               className="space-y-6"
             >
-              <input type="hidden" name="form-name" value="admission-inquiry" />
-              <input type="hidden" name="bot-field" />
+              {/* Hidden Subject for Better Email Labeling */}
+              <input
+                type="hidden"
+                name="_subject"
+                value="New Admission Enquiry - Vidya Infinity"
+              />
 
+              {/* Name + Email */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="text-sm font-bold uppercase">
@@ -76,25 +79,41 @@ const Contact: React.FC = () => {
 
                 <div>
                   <label className="text-sm font-bold uppercase">
-                    Phone Number
+                    Email Address
                   </label>
                   <input
-                    type="tel"
-                    name="phone"
+                    type="email"
+                    name="email"
                     required
                     className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
               </div>
 
+              {/* Phone */}
+              <div>
+                <label className="text-sm font-bold uppercase">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+
+              {/* Service */}
               <div>
                 <label className="text-sm font-bold uppercase">
                   Interested Service
                 </label>
                 <select
                   name="service"
+                  required
                   className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 >
+                  <option value="">Select a Service</option>
                   <option>University Admissions</option>
                   <option>Visa Guidance</option>
                   <option>Test Preparation</option>
@@ -103,6 +122,7 @@ const Contact: React.FC = () => {
                 </select>
               </div>
 
+              {/* Message */}
               <div>
                 <label className="text-sm font-bold uppercase">
                   Your Message
@@ -115,11 +135,12 @@ const Contact: React.FC = () => {
                 />
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit"
                 className="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 shadow-lg transition-all active:scale-95"
               >
-                Send Message
+                Book Free Consultation
                 <Send size={18} />
               </button>
             </form>

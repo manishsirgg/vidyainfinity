@@ -7,6 +7,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { CONTACT_INFO } from './constants';
 import { MessageCircle } from 'lucide-react';
+import { SOCIAL_LINKS } from "./constants";
 
 const App: React.FC = () => {
   // Simple scroll animation trigger

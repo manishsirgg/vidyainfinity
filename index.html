@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vidya Infinity | Global Education Architects</title>
+
+    <!-- Tailwind CDN (Required for styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Favicon (Optional but safe) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <!-- Netlify Hidden Form Detection -->
+    <form
+      name="admission-inquiry"
+      method="POST"
+      data-netlify="true"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="admission-inquiry" />
+      <input type="text" name="name" />
+      <input type="tel" name="phone" />
+      <input type="text" name="service" />
+      <textarea name="message"></textarea>
+    </form>
+
+    <!-- Vite Entry -->
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>

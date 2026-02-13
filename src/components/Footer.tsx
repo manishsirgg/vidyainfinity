@@ -1,0 +1,102 @@
+
+import React from 'react';
+import { Logo, NAV_LINKS, CONTACT_INFO, SOCIAL_LINKS } from '../constants';
+import { Facebook, Instagram, Linkedin, X } from 'lucide-react';
+
+const Footer: React.FC = () => {
+  return (
+    <footer className="bg-white border-t border-slate-100 pt-16 pb-8">
+      <div className="container mx-auto px-4 md:px-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          <div className="space-y-6">
+            <Logo />
+            <p className="text-slate-500 leading-relaxed">
+              Empowering dreams through expert education guidance. Your path to global academic success starts here.
+            </p>
+            <div className="flex gap-4">
+             
+<a 
+  href={SOCIAL_LINKS.facebook}
+  target="_blank" 
+  rel="noopener noreferrer"
+  className="w-10 h-10 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"
+>
+  <Facebook size={18} />
+</a>
+
+<a 
+  href={SOCAL_LINKS.instagram}
+  target="_blank" 
+  rel="noopener noreferrer"
+  className="w-10 h-10 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"
+>
+  <Instagram size={18} />
+</a>
+
+<a 
+  href={SOCAL_LINKS.linkedin}
+  target="_blank" 
+  rel="noopener noreferrer"
+  className="w-10 h-10 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"
+>
+  <Linkedin size={18} />
+</a>
+
+<a 
+  href={SOCAL_LINKS.x}
+  target="_blank" 
+  rel="noopener noreferrer"
+  className="w-10 h-10 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"
+>
+  <X size={18} />
+</a>
+
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-slate-900 font-bold mb-6">Navigation</h4>
+            <ul className="space-y-4">
+              {NAV_LINKS.map(link => (
+                <li key={link.label}>
+                  <a href={link.href} className="text-slate-500 hover:text-blue-900 transition-colors">{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-slate-900 font-bold mb-6">Our Focus</h4>
+            <ul className="space-y-4">
+              <li><a href="#education" className="text-slate-500 hover:text-blue-900 transition-colors">Study Abroad</a></li>
+              <li><a href="#education" className="text-slate-500 hover:text-blue-900 transition-colors">Test Prep (IELTS/SAT)</a></li>
+              <li><a href="#education" className="text-slate-500 hover:text-blue-900 transition-colors">Visa Documentation</a></li>
+              <li><a href="#education" className="text-slate-500 hover:text-blue-900 transition-colors">Career Planning</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-slate-900 font-bold mb-6">Stay Updated</h4>
+            <p className="text-slate-500 mb-4 text-sm">Get the latest international education news and admission dates.</p>
+            <div className="flex">
+              <input type="email" placeholder="Email Address" className="bg-slate-50 border border-slate-200 rounded-l-lg px-4 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-600" />
+              <button className="bg-blue-900 text-white px-4 py-2 rounded-r-lg hover:bg-blue-800 transition-all font-bold">Join</button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-slate-400 text-sm">
+            © {new Date().getFullYear()} Vidya Infinity. All rights reserved.
+          </p>
+          <div className="flex gap-6 text-sm text-slate-400">
+            <a href="#" className="hover:text-blue-900">Privacy Policy</a>
+            <a href="#" className="hover:text-blue-900">Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

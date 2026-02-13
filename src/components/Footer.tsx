@@ -1,6 +1,7 @@
 import React from 'react';
 import { Logo, NAV_LINKS, SOCIAL_LINKS } from '../constants';
 import { Facebook, Instagram, Linkedin, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   return (
@@ -120,8 +121,13 @@ const Footer: React.FC = () => {
             © {new Date().getFullYear()} Vidya Infinity. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-slate-400">
-            <a href="#" className="hover:text-blue-900">Privacy Policy</a>
-            <a href="#" className="hover:text-blue-900">Terms of Service</a>
+           <Link to="/privacy-policy" className="hover:text-blue-900">
+  Privacy Policy
+</Link>
+
+<Link to="/terms-of-service" className="hover:text-blue-900">
+  Terms of Service
+</Link>
           </div>
         </div>
       </div>

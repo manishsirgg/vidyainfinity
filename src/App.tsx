@@ -6,6 +6,7 @@ import Hero from './components/Hero';
 import Services from './components/Services';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import aboutImage from './assets/about.png';
 
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
@@ -45,10 +46,11 @@ const HomePage: React.FC = () => {
               <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-100 rounded-full z-0"></div>
 
               <img
-                src={aboutImage}
-                alt="About Vidya Infinity"
-                className="rounded-3xl shadow-2xl relative z-10 w-full h-[500px] object-cover"
-              />
+  src={aboutImage}
+  alt="About Vidya Infinity"
+  className="rounded-3xl shadow-2xl relative z-10 w-full h-[500px] object-cover"
+/>
+
 
               <div className="absolute -bottom-6 -right-6 bg-amber-500 text-white p-8 rounded-2xl shadow-xl z-20">
                 <p className="text-4xl font-bold font-serif leading-none">500+</p>

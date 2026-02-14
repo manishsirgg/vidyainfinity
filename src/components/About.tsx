@@ -1,4 +1,5 @@
 import React from 'react';
+import aboutImage from '../assets/about.png';
 
 const About: React.FC = () => {
   return (
@@ -11,7 +12,7 @@ const About: React.FC = () => {
             <div className="absolute -top-8 -left-8 w-40 h-40 bg-blue-100 rounded-full blur-2xl"></div>
             <div className="relative rounded-3xl overflow-hidden shadow-2xl">
               <img
-  src="/about.png"
+  src={aboutImage}
   alt="About Vidya Infinity"
   className="rounded-3xl shadow-2xl relative z-10 w-full h-[500px] object-cover"
 />

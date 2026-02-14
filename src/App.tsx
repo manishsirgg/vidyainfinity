@@ -14,7 +14,7 @@ import TermsOfService from './pages/TermsOfService';
 
 import { CONTACT_INFO } from './constants';
 import { MessageCircle } from 'lucide-react';
-import aboutImage from './assets/about.png';
+
 
 
 // ✅ Home Page Component

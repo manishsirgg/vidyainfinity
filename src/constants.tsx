@@ -5,8 +5,8 @@ import { GraduationCap, Globe, Languages, ShieldCheck, TrendingUp, MessageCircle
 export const CONTACT_INFO = {
   phone: "+91 8989601701",
   whatsapp: "918989601701",
-  email: "info@vidyainfinity.com",
-  address: "Global Education Architects, India",
+  email: "infovidyainfinity@gmail.com",
+  address: "First Floor, E53/54, Sector 3, Noida, uttar pardesh, 201301, India",
 };
 
 export const SOCIAL_LINKS = {

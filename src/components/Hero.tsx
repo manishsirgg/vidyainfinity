@@ -27,8 +27,8 @@ const Hero: React.FC = () => {
             </h1>
             
             <p className="text-xl text-slate-600 max-w-lg leading-relaxed">
-              Premium consultancy specializing in international admissions and digital business growth. 
-              We build the infrastructure for your success.
+              VidyaInfinity helps ambitious students secure admissions in leading universities across India and abroad 
+              through expert guidance, structured planning, and end-to-end application support.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">

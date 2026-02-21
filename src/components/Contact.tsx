@@ -52,10 +52,28 @@ const Contact: React.FC = () => {
             </h3>
 
             <form
-              action="https://formspree.io/f/mjgeylzp"
-              method="POST"
-              className="space-y-6"
-            >
+  onSubmit={async (e) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    const response = await fetch('/api/mailchimp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      alert('Thank you! We will contact you shortly.');
+      form.reset();
+    } else {
+      alert('Submission failed. Please try again.');
+    }
+  }}
+  className="space-y-6"
+>
               {/* Hidden Subject for Better Email Labeling */}
               <input
                 type="hidden"

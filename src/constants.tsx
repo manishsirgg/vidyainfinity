@@ -7,7 +7,7 @@ import { GraduationCap } from "lucide-react";
 ============================== */
 
 export const CONTACT_INFO = {
-  phone: "+91 8989601701",
+  phone: "+91 7828199500",
   whatsapp: "918989601701", // No +, no spaces (correct format for wa.me)
   email: "info@vidyainfinity.com",
   address:

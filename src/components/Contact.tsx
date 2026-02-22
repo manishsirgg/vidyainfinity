@@ -1,4 +1,5 @@
 import React from 'react';
+import toast from "react-hot-toast";
 import { Phone, Mail, MapPin, MessageSquare, Send } from 'lucide-react';
 import { CONTACT_INFO } from '../constants';
 
@@ -66,10 +67,14 @@ const Contact: React.FC = () => {
     });
 
     if (response.ok) {
-      alert('Thank you! We will contact you shortly.');
+      toast.success("Inquiry submitted successfully!", {
+  duration: 4000,
+});
       form.reset();
     } else {
-      alert('Submission failed. Please try again.');
+      toast.error("Something went wrong. Please try again.", {
+  duration: 4000,
+});
     }
   }}
   className="space-y-6"

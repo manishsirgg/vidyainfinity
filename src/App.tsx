@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { MessageCircle } from "lucide-react";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -17,8 +19,6 @@ import BlogPage from "./pages/BlogPage";
 import BlogPost from "./pages/BlogPost";
 
 import { CONTACT_INFO } from "./constants";
-import { MessageCircle } from "lucide-react";
-import { useLocation } from "react-router-dom";
 
 
 // ✅ Scroll To Top On Route Change
@@ -87,8 +87,35 @@ const App: React.FC = () => {
   return (
     <Router>
       <ScrollToTop />
+
+      {/* ✅ Global Toast System */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#0f172a",
+            color: "#ffffff",
+            borderRadius: "12px",
+            padding: "16px",
+            fontSize: "14px",
+          },
+          success: {
+            iconTheme: {
+              primary: "#22c55e",
+              secondary: "#ffffff",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#ffffff",
+            },
+          },
+        }}
+      />
+
       <div className="min-h-screen bg-white">
-        
         <Navbar />
         <ScrollToHash />
 
@@ -113,7 +140,6 @@ const App: React.FC = () => {
         >
           <MessageCircle size={32} />
         </a>
-
       </div>
     </Router>
   );

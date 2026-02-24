@@ -8,12 +8,15 @@ interface Frontmatter {
   date?: string;
   excerpt?: string;
   image?: string;
+  featuredImage?: string;
+  metaDescription?: string;
+  slug?: string;
 }
 
 const modules = import.meta.glob("../content/blog/*.md", {
   eager: true,
   query: "?raw",
-import: "default"
+  import: "default",
 });
 
 function parseMarkdown(file: string) {
@@ -30,7 +33,9 @@ function parseMarkdown(file: string) {
       const [key, ...value] = line.split(":");
       if (!key) return;
 
-      data[key.trim() as keyof Frontmatter] = value
+      const cleanedKey = key.trim() as keyof Frontmatter;
+
+      data[cleanedKey] = value
         .join(":")
         .trim()
         .replace(/^"(.*)"$/, "$1");
@@ -75,11 +80,31 @@ const BlogPost: React.FC = () => {
 
   const { data, content } = parseMarkdown(file);
 
+  /* =========================
+     SEO TITLE + META
+  ========================= */
+
   useEffect(() => {
     if (data?.title) {
       document.title = `${data.title} | Vidya Infinity`;
     }
+
+    if (data?.metaDescription) {
+      let meta = document.querySelector(
+        "meta[name='description']"
+      ) as HTMLMetaElement | null;
+
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.name = "description";
+        document.head.appendChild(meta);
+      }
+
+      meta.content = data.metaDescription;
+    }
   }, [data]);
+
+  const bannerImage = data.featuredImage || data.image;
 
   return (
     <section className="bg-white py-24">
@@ -95,26 +120,26 @@ const BlogPost: React.FC = () => {
           </Link>
         </div>
 
-        {/* Featured Image (Optional) */}
-        {data.image && (
-          <div className="mb-10 rounded-3xl overflow-hidden shadow-md">
-            <img
-              src={data.image}
-              alt={data.title}
-              className="w-full h-auto object-cover"
-            />
-          </div>
-        )}
-
         {/* Title */}
         <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-6 leading-tight">
           {data.title}
         </h1>
 
-        {/* Meta */}
-        <p className="text-sm text-slate-500 mb-12">
+        {/* Date */}
+        <p className="text-sm text-slate-500 mb-8">
           {data.date}
         </p>
+
+        {/* Featured Banner */}
+        {bannerImage && (
+          <div className="mb-12 rounded-3xl overflow-hidden shadow-lg">
+            <img
+              src={bannerImage}
+              alt={data.title}
+              className="w-full h-auto object-cover"
+            />
+          </div>
+        )}
 
         {/* Content */}
         <article className="prose prose-lg max-w-none prose-headings:text-blue-900 prose-a:text-blue-700 prose-strong:text-slate-900">

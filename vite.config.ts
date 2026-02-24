@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
 
   return {
-    base: "./",   // 🔥 CRITICAL FIX FOR NETLIFY
+    base: "/",   // 🔥 CRITICAL FIX FOR NETLIFY
 
     server: {
       port: 3000,

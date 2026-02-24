@@ -7,7 +7,6 @@ interface Frontmatter {
   title?: string;
   date?: string;
   excerpt?: string;
-  image?: string;
   featuredImage?: string;
   metaDescription?: string;
   slug?: string;
@@ -33,9 +32,7 @@ function parseMarkdown(file: string) {
       const [key, ...value] = line.split(":");
       if (!key) return;
 
-      const cleanedKey = key.trim() as keyof Frontmatter;
-
-      data[cleanedKey] = value
+      data[key.trim() as keyof Frontmatter] = value
         .join(":")
         .trim()
         .replace(/^"(.*)"$/, "$1");
@@ -65,13 +62,7 @@ const BlogPost: React.FC = () => {
         <h1 className="text-3xl font-bold text-blue-900 mb-4">
           404 — Post Not Found
         </h1>
-        <p className="text-slate-600 mb-6">
-          The article you’re looking for does not exist.
-        </p>
-        <Link
-          to="/blog"
-          className="text-blue-700 font-semibold hover:text-blue-600"
-        >
+        <Link to="/blog" className="text-blue-700 font-semibold">
           ← Back to Blog
         </Link>
       </section>
@@ -80,70 +71,176 @@ const BlogPost: React.FC = () => {
 
   const { data, content } = parseMarkdown(file);
 
+  const banner = data.featuredImage || "";
+  const pageUrl = `https://vidyainfinity.com/blog/${slug}`;
+
   /* =========================
-     SEO TITLE + META
+     SEO + OG + TWITTER + SCHEMA
   ========================= */
 
   useEffect(() => {
-    if (data?.title) {
+    if (data.title) {
       document.title = `${data.title} | Vidya Infinity`;
     }
 
-    if (data?.metaDescription) {
-      let meta = document.querySelector(
-        "meta[name='description']"
-      ) as HTMLMetaElement | null;
+    const setMeta = (property: string, content: string) => {
+      let element =
+        document.querySelector(`meta[property='${property}']`) ||
+        document.querySelector(`meta[name='${property}']`);
 
-      if (!meta) {
-        meta = document.createElement("meta");
-        meta.name = "description";
-        document.head.appendChild(meta);
+      if (!element) {
+        element = document.createElement("meta");
+        element.setAttribute(
+          property.startsWith("og:")
+            ? "property"
+            : property.startsWith("twitter:")
+            ? "name"
+            : "name",
+          property
+        );
+        document.head.appendChild(element);
       }
 
-      meta.content = data.metaDescription;
-    }
-  }, [data]);
+      element.setAttribute("content", content);
+    };
 
-  const bannerImage = data.featuredImage || data.image;
+    if (data.metaDescription) {
+      setMeta("description", data.metaDescription);
+      setMeta("og:description", data.metaDescription);
+      setMeta("twitter:description", data.metaDescription);
+    }
+
+    if (data.title) {
+      setMeta("og:title", data.title);
+      setMeta("twitter:title", data.title);
+    }
+
+    if (banner) {
+      const fullImageUrl = `https://vidyainfinity.com${banner}`;
+      setMeta("og:image", fullImageUrl);
+      setMeta("twitter:image", fullImageUrl);
+    }
+
+    setMeta("og:type", "article");
+    setMeta("og:url", pageUrl);
+    setMeta("twitter:card", "summary_large_image");
+
+    /* JSON-LD Article Schema */
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: data.title,
+      description: data.metaDescription,
+      image: banner
+        ? `https://vidyainfinity.com${banner}`
+        : undefined,
+      author: {
+        "@type": "Organization",
+        name: "Vidya Infinity",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Vidya Infinity",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://vidyainfinity.com/logo.png",
+        },
+      },
+      datePublished: data.date,
+      mainEntityOfPage: pageUrl,
+    };
+
+    const existingScript = document.getElementById("blog-schema");
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "blog-schema";
+    script.text = JSON.stringify(schema);
+    document.head.appendChild(script);
+
+    return () => {
+      const cleanupScript = document.getElementById("blog-schema");
+      if (cleanupScript) cleanupScript.remove();
+    };
+  }, [data, banner, pageUrl]);
+
+  /* =========================
+     YOUTUBE AUTO EMBED
+  ========================= */
+
+  const renderers = {
+    a: ({ href, children }: any) => {
+      if (!href) return null;
+
+      if (href.includes("youtube.com") || href.includes("youtu.be")) {
+        const videoIdMatch =
+          href.match(/v=([^&]+)/) || href.match(/youtu\.be\/([^?]+)/);
+
+        const videoId = videoIdMatch ? videoIdMatch[1] : null;
+
+        if (videoId) {
+          return (
+            <div className="my-10 aspect-video">
+              <iframe
+                src={`https://www.youtube.com/embed/${videoId}`}
+                title="YouTube video"
+                className="w-full h-full rounded-xl shadow-lg"
+                allowFullScreen
+              ></iframe>
+            </div>
+          );
+        }
+      }
+
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-700 font-medium hover:underline"
+        >
+          {children}
+        </a>
+      );
+    },
+  };
 
   return (
     <section className="bg-white py-24">
       <div className="max-w-4xl mx-auto px-6">
 
-        {/* Back Link */}
-        <div className="mb-10">
-          <Link
-            to="/blog"
-            className="text-sm text-blue-700 font-medium hover:text-blue-600"
-          >
-            ← Back to All Articles
-          </Link>
-        </div>
+        <Link
+          to="/blog"
+          className="text-sm text-blue-700 font-medium"
+        >
+          ← Back to All Articles
+        </Link>
 
-        {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-6 leading-tight">
+        <h1 className="text-4xl font-bold text-blue-900 mt-6 mb-4">
           {data.title}
         </h1>
 
-        {/* Date */}
         <p className="text-sm text-slate-500 mb-8">
           {data.date}
         </p>
 
-        {/* Featured Banner */}
-        {bannerImage && (
-          <div className="mb-12 rounded-3xl overflow-hidden shadow-lg">
-            <img
-              src={bannerImage}
-              alt={data.title}
-              className="w-full h-auto object-cover"
-            />
-          </div>
+        {banner && (
+          <img
+            src={banner}
+            alt={data.title}
+            className="w-full rounded-3xl mb-12 shadow-lg"
+          />
         )}
 
-        {/* Content */}
-        <article className="prose prose-lg max-w-none prose-headings:text-blue-900 prose-a:text-blue-700 prose-strong:text-slate-900">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <article className="prose prose-lg max-w-none">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={renderers}
+          >
             {content}
           </ReactMarkdown>
         </article>

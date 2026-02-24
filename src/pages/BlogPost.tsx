@@ -57,16 +57,21 @@ function parseMarkdown(file: string) {
    BUILD POSTS ARRAY
 ========================= */
 
-const allPosts = Object.entries(modules).map(([path, file]) => {
-  const slug = path.split("/").pop()?.replace(".md", "") || "";
-  const { data, content } = parseMarkdown(file as string);
+const allPosts = Object.entries(modules)
+  .map(([path, file]) => {
+    const slug = path.split("/").pop()?.replace(".md", "") || "";
+    const { data, content } = parseMarkdown(file as string);
 
-  return {
-    slug,
-    ...data,
-    content,
-  };
-});
+    return {
+      slug,
+      ...data,
+      content,
+    };
+  })
+  .sort((a, b) =>
+    new Date(b.date || "").getTime() -
+    new Date(a.date || "").getTime()
+  );
 
 /* =========================
    COMPONENT
@@ -79,11 +84,13 @@ const BlogPost: React.FC = () => {
   const post = currentIndex !== -1 ? allPosts[currentIndex] : null;
 
   const prevPost =
-    currentIndex > 0 ? allPosts[currentIndex - 1] : null;
-
-  const nextPost =
     currentIndex < allPosts.length - 1
       ? allPosts[currentIndex + 1]
+      : null;
+
+  const nextPost =
+    currentIndex > 0
+      ? allPosts[currentIndex - 1]
       : null;
 
   const relatedPosts = post
@@ -100,6 +107,12 @@ const BlogPost: React.FC = () => {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  useEffect(() => {
+    if (post?.title) {
+      document.title = `${post.title} | Vidya Infinity`;
+    }
+  }, [post?.title]);
+
   if (!post) {
     return (
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6">
@@ -114,17 +127,6 @@ const BlogPost: React.FC = () => {
   }
 
   const banner = post.featuredImage || "";
-  const pageUrl = `https://vidyainfinity.com/blog/${slug}`;
-
-  /* =========================
-     SEO META
-  ========================= */
-
-  useEffect(() => {
-    if (post.title) {
-      document.title = `${post.title} | Vidya Infinity`;
-    }
-  }, [post.title]);
 
   /* =========================
      MARKDOWN RENDERERS
@@ -168,8 +170,6 @@ const BlogPost: React.FC = () => {
         </a>
       );
     },
-
-    hr: () => null,
   };
 
   /* =========================
@@ -177,8 +177,8 @@ const BlogPost: React.FC = () => {
   ========================= */
 
   return (
-    <section className="bg-white py-24">
-      <div className="max-w-4xl mx-auto px-6">
+    <section className="bg-white">
+      <div className="max-w-3xl mx-auto px-6 py-24">
 
         {/* Back Link */}
         <Link
@@ -189,11 +189,12 @@ const BlogPost: React.FC = () => {
         </Link>
 
         {/* Title */}
-        <h1 className="text-4xl font-bold text-blue-900 mt-6 mb-4 leading-tight">
+        <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mt-8 mb-6 leading-tight">
           {post.title}
         </h1>
 
-        <p className="text-sm text-slate-500 mb-10">
+        {/* Date */}
+        <p className="text-slate-500 mb-12">
           {post.date}
         </p>
 
@@ -202,24 +203,33 @@ const BlogPost: React.FC = () => {
           <img
             src={banner}
             alt={post.title}
-            className="w-full rounded-3xl mb-14 shadow-lg"
+            className="w-full rounded-3xl mb-16 shadow-lg"
           />
         )}
 
-        {/* Article */}
-        <article
-          className="
-            prose
-            prose-lg
-            prose-headings:mt-14
-            prose-headings:mb-6
-            prose-p:mb-6
-            prose-ul:mb-6
-            prose-hr:my-14
-            max-w-3xl
-            mx-auto
-          "
-        >
+        {/* Article Content */}
+        <article className="
+  prose 
+  prose-lg 
+  prose-slate 
+  max-w-3xl 
+  mx-auto
+
+  prose-h2:text-3xl
+  prose-h2:font-bold
+  prose-h2:mt-24
+  prose-h2:mb-8
+
+  prose-h3:text-2xl
+  prose-h3:mt-16
+  prose-h3:mb-6
+
+  prose-p:mb-8
+  prose-ul:mb-10
+  prose-li:mb-3
+
+  prose-hr:my-24
+">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={renderers}
@@ -229,7 +239,7 @@ const BlogPost: React.FC = () => {
         </article>
 
         {/* Navigation */}
-        <div className="mt-20 border-t pt-12 grid md:grid-cols-2 gap-8">
+        <div className="mt-24 border-t pt-12 grid md:grid-cols-2 gap-8">
           {prevPost ? (
             <Link to={`/blog/${prevPost.slug}`}>
               <p className="text-sm text-gray-500 mb-2">
@@ -258,7 +268,7 @@ const BlogPost: React.FC = () => {
 
         {/* Related Articles */}
         {relatedPosts.length > 0 && (
-          <div className="mt-24">
+          <div className="mt-28">
             <h2 className="text-2xl font-bold text-blue-900 mb-10">
               Related Articles
             </h2>

@@ -208,28 +208,7 @@ const BlogPost: React.FC = () => {
         )}
 
         {/* Article Content */}
-        <article className="
-  prose 
-  prose-lg 
-  prose-slate 
-  max-w-3xl 
-  mx-auto
-
-  prose-h2:text-3xl
-  prose-h2:font-bold
-  prose-h2:mt-24
-  prose-h2:mb-8
-
-  prose-h3:text-2xl
-  prose-h3:mt-16
-  prose-h3:mb-6
-
-  prose-p:mb-8
-  prose-ul:mb-10
-  prose-li:mb-3
-
-  prose-hr:my-24
-">
+        <article className="prose prose-lg max-w-3xl mx-auto">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={renderers}

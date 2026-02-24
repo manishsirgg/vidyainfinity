@@ -10,13 +10,22 @@ interface Frontmatter {
   featuredImage?: string;
   metaDescription?: string;
   slug?: string;
+  category?: string;
 }
+
+/* =========================
+   LOAD ALL MARKDOWN FILES
+========================= */
 
 const modules = import.meta.glob("../content/blog/*.md", {
   eager: true,
   query: "?raw",
   import: "default",
 });
+
+/* =========================
+   PARSE FRONTMATTER
+========================= */
 
 function parseMarkdown(file: string) {
   const frontmatterRegex = /^---\s*([\s\S]*?)\s*---/;
@@ -44,19 +53,54 @@ function parseMarkdown(file: string) {
   return { data, content };
 }
 
+/* =========================
+   BUILD POSTS ARRAY
+========================= */
+
+const allPosts = Object.entries(modules).map(([path, file]) => {
+  const slug = path.split("/").pop()?.replace(".md", "") || "";
+  const { data, content } = parseMarkdown(file as string);
+
+  return {
+    slug,
+    ...data,
+    content,
+  };
+});
+
+/* =========================
+   COMPONENT
+========================= */
+
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const file =
-    slug && modules[`../content/blog/${slug}.md`]
-      ? (modules[`../content/blog/${slug}.md`] as string)
+  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+  const post = currentIndex !== -1 ? allPosts[currentIndex] : null;
+
+  const prevPost =
+    currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+
+  const nextPost =
+    currentIndex < allPosts.length - 1
+      ? allPosts[currentIndex + 1]
       : null;
+
+  const relatedPosts = post
+    ? allPosts
+        .filter(
+          (p) =>
+            p.slug !== post.slug &&
+            p.category === post.category
+        )
+        .slice(0, 3)
+    : [];
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  if (!file) {
+  if (!post) {
     return (
       <section className="min-h-screen flex flex-col items-center justify-center text-center px-6">
         <h1 className="text-3xl font-bold text-blue-900 mb-4">
@@ -69,107 +113,21 @@ const BlogPost: React.FC = () => {
     );
   }
 
-  const { data, content } = parseMarkdown(file);
-
-  const banner = data.featuredImage || "";
+  const banner = post.featuredImage || "";
   const pageUrl = `https://vidyainfinity.com/blog/${slug}`;
 
   /* =========================
-     SEO + OG + TWITTER + SCHEMA
+     SEO META
   ========================= */
 
   useEffect(() => {
-    if (data.title) {
-      document.title = `${data.title} | Vidya Infinity`;
+    if (post.title) {
+      document.title = `${post.title} | Vidya Infinity`;
     }
-
-    const setMeta = (property: string, content: string) => {
-      let element =
-        document.querySelector(`meta[property='${property}']`) ||
-        document.querySelector(`meta[name='${property}']`);
-
-      if (!element) {
-        element = document.createElement("meta");
-        element.setAttribute(
-          property.startsWith("og:")
-            ? "property"
-            : property.startsWith("twitter:")
-            ? "name"
-            : "name",
-          property
-        );
-        document.head.appendChild(element);
-      }
-
-      element.setAttribute("content", content);
-    };
-
-    if (data.metaDescription) {
-      setMeta("description", data.metaDescription);
-      setMeta("og:description", data.metaDescription);
-      setMeta("twitter:description", data.metaDescription);
-    }
-
-    if (data.title) {
-      setMeta("og:title", data.title);
-      setMeta("twitter:title", data.title);
-    }
-
-    if (banner) {
-      const fullImageUrl = `https://vidyainfinity.com${banner}`;
-      setMeta("og:image", fullImageUrl);
-      setMeta("twitter:image", fullImageUrl);
-    }
-
-    setMeta("og:type", "article");
-    setMeta("og:url", pageUrl);
-    setMeta("twitter:card", "summary_large_image");
-
-    /* JSON-LD Article Schema */
-
-    const schema = {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: data.title,
-      description: data.metaDescription,
-      image: banner
-        ? `https://vidyainfinity.com${banner}`
-        : undefined,
-      author: {
-        "@type": "Organization",
-        name: "Vidya Infinity",
-      },
-      publisher: {
-        "@type": "Organization",
-        name: "Vidya Infinity",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://vidyainfinity.com/logo.png",
-        },
-      },
-      datePublished: data.date,
-      mainEntityOfPage: pageUrl,
-    };
-
-    const existingScript = document.getElementById("blog-schema");
-    if (existingScript) {
-      existingScript.remove();
-    }
-
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.id = "blog-schema";
-    script.text = JSON.stringify(schema);
-    document.head.appendChild(script);
-
-    return () => {
-      const cleanupScript = document.getElementById("blog-schema");
-      if (cleanupScript) cleanupScript.remove();
-    };
-  }, [data, banner, pageUrl]);
+  }, [post.title]);
 
   /* =========================
-     YOUTUBE AUTO EMBED
+     MARKDOWN RENDERERS
   ========================= */
 
   const renderers = {
@@ -178,19 +136,22 @@ const BlogPost: React.FC = () => {
 
       if (href.includes("youtube.com") || href.includes("youtu.be")) {
         const videoIdMatch =
-          href.match(/v=([^&]+)/) || href.match(/youtu\.be\/([^?]+)/);
+          href.match(/v=([^&]+)/) ||
+          href.match(/youtu\.be\/([^?]+)/);
 
-        const videoId = videoIdMatch ? videoIdMatch[1] : null;
+        const videoId = videoIdMatch
+          ? videoIdMatch[1]
+          : null;
 
         if (videoId) {
           return (
-            <div className="my-10 aspect-video">
+            <div className="my-12 aspect-video">
               <iframe
                 src={`https://www.youtube.com/embed/${videoId}`}
                 title="YouTube video"
-                className="w-full h-full rounded-xl shadow-lg"
+                className="w-full h-full rounded-2xl shadow-lg"
                 allowFullScreen
-              ></iframe>
+              />
             </div>
           );
         }
@@ -207,12 +168,19 @@ const BlogPost: React.FC = () => {
         </a>
       );
     },
+
+    hr: () => null,
   };
+
+  /* =========================
+     RETURN
+  ========================= */
 
   return (
     <section className="bg-white py-24">
       <div className="max-w-4xl mx-auto px-6">
 
+        {/* Back Link */}
         <Link
           to="/blog"
           className="text-sm text-blue-700 font-medium"
@@ -220,30 +188,104 @@ const BlogPost: React.FC = () => {
           ← Back to All Articles
         </Link>
 
-        <h1 className="text-4xl font-bold text-blue-900 mt-6 mb-4">
-          {data.title}
+        {/* Title */}
+        <h1 className="text-4xl font-bold text-blue-900 mt-6 mb-4 leading-tight">
+          {post.title}
         </h1>
 
-        <p className="text-sm text-slate-500 mb-8">
-          {data.date}
+        <p className="text-sm text-slate-500 mb-10">
+          {post.date}
         </p>
 
+        {/* Banner */}
         {banner && (
           <img
             src={banner}
-            alt={data.title}
-            className="w-full rounded-3xl mb-12 shadow-lg"
+            alt={post.title}
+            className="w-full rounded-3xl mb-14 shadow-lg"
           />
         )}
 
-        <article className="prose prose-lg max-w-none">
+        {/* Article */}
+        <article
+          className="
+            prose
+            prose-lg
+            prose-headings:mt-14
+            prose-headings:mb-6
+            prose-p:mb-6
+            prose-ul:mb-6
+            prose-hr:my-14
+            max-w-3xl
+            mx-auto
+          "
+        >
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={renderers}
           >
-            {content}
+            {post.content}
           </ReactMarkdown>
         </article>
+
+        {/* Navigation */}
+        <div className="mt-20 border-t pt-12 grid md:grid-cols-2 gap-8">
+          {prevPost ? (
+            <Link to={`/blog/${prevPost.slug}`}>
+              <p className="text-sm text-gray-500 mb-2">
+                ← Previous Article
+              </p>
+              <h3 className="text-lg font-semibold text-blue-900 hover:underline">
+                {prevPost.title}
+              </h3>
+            </Link>
+          ) : <div />}
+
+          {nextPost && (
+            <Link
+              to={`/blog/${nextPost.slug}`}
+              className="text-right"
+            >
+              <p className="text-sm text-gray-500 mb-2">
+                Next Article →
+              </p>
+              <h3 className="text-lg font-semibold text-blue-900 hover:underline">
+                {nextPost.title}
+              </h3>
+            </Link>
+          )}
+        </div>
+
+        {/* Related Articles */}
+        {relatedPosts.length > 0 && (
+          <div className="mt-24">
+            <h2 className="text-2xl font-bold text-blue-900 mb-10">
+              Related Articles
+            </h2>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {relatedPosts.map((item) => (
+                <Link
+                  key={item.slug}
+                  to={`/blog/${item.slug}`}
+                  className="border rounded-xl p-6 hover:shadow-lg transition"
+                >
+                  <p className="text-sm text-gray-500 mb-2">
+                    {item.date}
+                  </p>
+
+                  <h3 className="text-lg font-semibold text-blue-900 mb-3">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-gray-600 text-sm line-clamp-3">
+                    {item.excerpt}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </section>

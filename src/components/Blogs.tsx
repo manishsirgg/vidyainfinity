@@ -2,60 +2,92 @@ import React from "react";
 import { ArrowRight, Calendar, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
-interface Blog {
-  id: number;
-  slug: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  author: string;
-  image: string;
-  category: string;
+/* =========================
+   FRONTMATTER TYPE
+========================= */
+
+interface Frontmatter {
+  title?: string;
+  date?: string;
+  excerpt?: string;
+  featuredImage?: string;
+  slug?: string;
+  category?: string;
+  author?: string;
 }
 
-const SAMPLE_BLOGS: Blog[] = [
-  {
-    id: 1,
-    slug: "navigating-2024-global-admissions",
-    title: "Navigating the 2024 Global Admissions Landscape",
-    excerpt:
-      "Discover the latest trends in international university admissions and how to position your application for success.",
-    date: "May 15, 2024",
-    author: "Manish Goswami",
-    image:
-      "https://images.unsplash.com/photo-1523050338692-7b835a07973f?q=80&w=2070&auto=format&fit=crop",
-    category: "Admissions",
-  },
-  {
-    id: 2,
-    slug: "mastering-ielts-tips",
-    title: "Mastering the IELTS: Tips from Certified Mentors",
-    excerpt:
-      "Our top strategies for achieving a Band 8+ in your first attempt. Focus on the sections that matter most.",
-    date: "June 02, 2024",
-    author: "Vidya Team",
-    image:
-      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop",
-    category: "Test Prep",
-  },
-  {
-    id: 3,
-    slug: "future-careers-ai-sustainability",
-    title: "The Future of Careers in AI and Sustainability",
-    excerpt:
-      "Which degrees will be most valuable in the next decade? We analyze the shifting global job market.",
-    date: "June 10, 2024",
-    author: "Career Architects",
-    image:
-      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2070&auto=format&fit=crop",
-    category: "Career Planning",
-  },
-];
+/* =========================
+   LOAD MARKDOWN FILES
+========================= */
+
+const modules = import.meta.glob("../content/blog/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+
+/* =========================
+   PARSE FRONTMATTER
+========================= */
+
+function parseMarkdown(file: string) {
+  const frontmatterRegex = /^---\s*([\s\S]*?)\s*---/;
+  const match = file.match(frontmatterRegex);
+
+  let data: Frontmatter = {};
+  let content = file;
+
+  if (match) {
+    const frontmatter = match[1];
+
+    frontmatter.split("\n").forEach((line) => {
+      const [key, ...value] = line.split(":");
+      if (!key) return;
+
+      data[key.trim() as keyof Frontmatter] = value
+        .join(":")
+        .trim()
+        .replace(/^"(.*)"$/, "$1");
+    });
+
+    content = file.replace(frontmatterRegex, "").trim();
+  }
+
+  return { data, content };
+}
+
+/* =========================
+   BUILD BLOG ARRAY
+========================= */
+
+const BLOGS = Object.entries(modules)
+  .map(([path, file], index) => {
+    const slug = path.split("/").pop()?.replace(".md", "") || "";
+    const { data } = parseMarkdown(file as string);
+
+    return {
+      id: index + 1,
+      slug,
+      title: data.title || "Untitled Post",
+      excerpt: data.excerpt || "",
+      date: data.date || "",
+      author: data.author || "Vidya Infinity",
+      image: data.featuredImage || "/assets/blog/default.jpg",
+      category: data.category || "Education",
+    };
+  })
+  // Optional: newest first (based on date string)
+  .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+/* =========================
+   COMPONENT
+========================= */
 
 const Blogs: React.FC = () => {
   return (
     <section id="blogs" className="py-24 bg-white">
       <div className="container mx-auto px-4 md:px-8">
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-2xl">
@@ -68,7 +100,6 @@ const Blogs: React.FC = () => {
             </h2>
           </div>
 
-          {/* View All */}
           <Link
             to="/blog"
             className="flex items-center gap-2 text-slate-900 font-bold border-b-2 border-amber-500 pb-1 hover:text-blue-700 hover:border-blue-700 transition-all"
@@ -79,12 +110,12 @@ const Blogs: React.FC = () => {
 
         {/* Blog Grid */}
         <div className="grid lg:grid-cols-3 gap-10">
-          {SAMPLE_BLOGS.map((blog) => (
+          {BLOGS.map((blog) => (
             <article
               key={blog.id}
               className="group cursor-pointer transition-all"
             >
-              {/* Image Click */}
+              {/* Image */}
               <Link to={`/blog/${blog.slug}`}>
                 <div className="relative overflow-hidden rounded-3xl mb-6 aspect-[16/10]">
                   <img
@@ -92,6 +123,7 @@ const Blogs: React.FC = () => {
                     alt={blog.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
+
                   <div className="absolute top-4 left-4">
                     <span className="bg-white/90 backdrop-blur-sm text-blue-900 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm">
                       {blog.category}
@@ -106,18 +138,20 @@ const Blogs: React.FC = () => {
                   <span className="flex items-center gap-1.5">
                     <Calendar size={14} /> {blog.date}
                   </span>
+
                   <span className="flex items-center gap-1.5">
                     <User size={14} /> {blog.author}
                   </span>
                 </div>
 
-                {/* Title Click */}
+                {/* Title */}
                 <Link to={`/blog/${blog.slug}`}>
                   <h3 className="text-2xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors leading-tight">
                     {blog.title}
                   </h3>
                 </Link>
 
+                {/* Excerpt */}
                 <p className="text-slate-600 line-clamp-2">
                   {blog.excerpt}
                 </p>
@@ -133,6 +167,7 @@ const Blogs: React.FC = () => {
             </article>
           ))}
         </div>
+
       </div>
     </section>
   );

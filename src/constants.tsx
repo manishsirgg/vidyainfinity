@@ -44,7 +44,7 @@ export const CAREER_HUB_LINKS = [
   },
   {
     label: "Preparation Corner",
-    href: "https://prepcorner.manishgoswami.com",
+    href: "https://prepcorner.vidyainfinity.com",
     description: "Ace your exams with expert prep.",
   },
   {

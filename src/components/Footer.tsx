@@ -150,7 +150,7 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400 text-sm">
-            © {new Date().getFullYear()} Vidya Infinity. All rights reserved.
+            © {new Date().getFullYear()} Vidya Infinity [Infinity Global Advisory]. All rights reserved.
           </p>
 
           <div className="flex gap-6 text-sm">

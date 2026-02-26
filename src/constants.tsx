@@ -34,12 +34,12 @@ export const SOCIAL_LINKS = {
 export const CAREER_HUB_LINKS = [
   {
     label: "University Explorer",
-    href: "https://manishgoswami.edumilestones.com",
+    href: "https://vidyainfinity.edumilestones.com",
     description: "Explore top universities worldwide.",
   },
   {
     label: "Psychometric Tests",
-    href: "https://manishgoswami.infigonfutures.in",
+    href: "https://vidyainfinity.infigonfutures.in",
     description: "Discover your true potential.",
   },
   {
@@ -48,9 +48,9 @@ export const CAREER_HUB_LINKS = [
     description: "Ace your exams with expert prep.",
   },
   {
-    label: "Practice Test Series",
-    href: "https://testzone.manishgoswami.com",
-    description: "Test your knowledge before the big day.",
+    label: "Student Registration",
+    href: "https://vidyainfinity.unisetu.com/student-registration",
+    description: "Begin your admission journey with us",
   },
 ];
 

@@ -8,27 +8,27 @@ declare global {
   interface Window {
     OneSignal?: any;
     OneSignalDeferred?: any[];
+    __ONESIGNAL_INIT_DONE__?: boolean;
   }
 }
 
-let initialized = false;
-let sdkLoadingPromise: Promise<void> | null = null;
+let sdkPromise: Promise<void> | null = null;
 
 function loadSDK() {
-  if (sdkLoadingPromise) return sdkLoadingPromise;
+  if (sdkPromise) return sdkPromise;
 
-  sdkLoadingPromise = new Promise<void>((resolve, reject) => {
+  sdkPromise = new Promise<void>((resolve, reject) => {
     if (window.OneSignal) {
       resolve();
       return;
     }
 
-    const existingScript = document.querySelector(
+    const existing = document.querySelector(
       'script[src*="OneSignalSDK"]'
     );
 
-    if (existingScript) {
-      existingScript.addEventListener("load", () => resolve());
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
       return;
     }
 
@@ -36,24 +36,30 @@ function loadSDK() {
     script.src = ONESIGNAL_SDK_SRC;
     script.defer = true;
     script.onload = () => resolve();
-    script.onerror = () => reject("OneSignal SDK failed to load");
+    script.onerror = () => reject("SDK load failed");
     document.head.appendChild(script);
   });
 
-  return sdkLoadingPromise;
+  return sdkPromise;
 }
 
 export async function initOneSignal() {
   if (!ONESIGNAL_APP_ID) return;
 
-  if (initialized) return;
+  if (window.__ONESIGNAL_INIT_DONE__) return;
 
   await loadSDK();
 
   window.OneSignalDeferred = window.OneSignalDeferred || [];
 
   return new Promise<void>((resolve) => {
-    window.OneSignalDeferred.push(async function (OneSignal: any) {
+    window.OneSignalDeferred!.push(async function (OneSignal: any) {
+
+      if (window.__ONESIGNAL_INIT_DONE__) {
+        resolve();
+        return;
+      }
+
       await OneSignal.init({
         appId: ONESIGNAL_APP_ID,
         serviceWorkerPath: "/OneSignalSDKWorker.js",
@@ -61,7 +67,7 @@ export async function initOneSignal() {
         notifyButton: { enable: false },
       });
 
-      initialized = true;
+      window.__ONESIGNAL_INIT_DONE__ = true;
       resolve();
     });
   });
@@ -74,6 +80,7 @@ export async function requestPushNotifications(): Promise<
 
   return new Promise((resolve) => {
     window.OneSignalDeferred!.push(async function (OneSignal: any) {
+
       const optedIn = await OneSignal.User.PushSubscription.optedIn;
 
       if (optedIn) {

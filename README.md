@@ -18,3 +18,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/1CmmLgPER0zTGnOqVOVlco7
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+
+## Push notifications
+
+Browser push notifications are now wired through OneSignal, including a secure `/api/push/broadcast` endpoint for blog alerts and marketing campaigns. See [docs/push-notifications.md](docs/push-notifications.md) for setup steps, required environment variables, and `curl` examples.

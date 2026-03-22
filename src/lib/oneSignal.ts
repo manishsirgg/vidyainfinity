@@ -12,18 +12,35 @@ declare global {
 }
 
 let initialized = false;
+let sdkLoadingPromise: Promise<void> | null = null;
 
 function loadSDK() {
-  return new Promise<void>((resolve, reject) => {
-    if (window.OneSignal) return resolve();
+  if (sdkLoadingPromise) return sdkLoadingPromise;
+
+  sdkLoadingPromise = new Promise<void>((resolve, reject) => {
+    if (window.OneSignal) {
+      resolve();
+      return;
+    }
+
+    const existingScript = document.querySelector(
+      'script[src*="OneSignalSDK"]'
+    );
+
+    if (existingScript) {
+      existingScript.addEventListener("load", () => resolve());
+      return;
+    }
 
     const script = document.createElement("script");
     script.src = ONESIGNAL_SDK_SRC;
     script.defer = true;
     script.onload = () => resolve();
-    script.onerror = () => reject();
+    script.onerror = () => reject("OneSignal SDK failed to load");
     document.head.appendChild(script);
   });
+
+  return sdkLoadingPromise;
 }
 
 export async function initOneSignal() {
@@ -35,50 +52,50 @@ export async function initOneSignal() {
 
   window.OneSignalDeferred = window.OneSignalDeferred || [];
 
-  window.OneSignalDeferred.push(async function (OneSignal: any) {
-    await OneSignal.init({
-      appId: ONESIGNAL_APP_ID,
-      serviceWorkerPath: "/OneSignalSDKWorker.js",
-      allowLocalhostAsSecureOrigin: true,
-      notifyButton: { enable: false },
-    });
+  return new Promise<void>((resolve) => {
+    window.OneSignalDeferred.push(async function (OneSignal: any) {
+      await OneSignal.init({
+        appId: ONESIGNAL_APP_ID,
+        serviceWorkerPath: "/OneSignalSDKWorker.js",
+        allowLocalhostAsSecureOrigin: true,
+        notifyButton: { enable: false },
+      });
 
-    initialized = true;
+      initialized = true;
+      resolve();
+    });
   });
 }
 
 export async function requestPushNotifications(): Promise<
-  'granted' | 'denied' | 'default' | 'already-subscribed'
+  "granted" | "denied" | "default" | "already-subscribed"
 > {
   await initOneSignal();
 
   return new Promise((resolve) => {
-    window.OneSignalDeferred.push(async function (OneSignal: any) {
-      // ✅ CHECK IF ALREADY SUBSCRIBED
+    window.OneSignalDeferred!.push(async function (OneSignal: any) {
       const optedIn = await OneSignal.User.PushSubscription.optedIn;
 
       if (optedIn) {
-        resolve('already-subscribed');
+        resolve("already-subscribed");
         return;
       }
 
-      // ✅ REQUEST PERMISSION
       await OneSignal.Notifications.requestPermission();
 
-      // ✅ CHECK AGAIN AFTER PERMISSION
       const newOptIn = await OneSignal.User.PushSubscription.optedIn;
 
       if (newOptIn) {
-        resolve('granted');
+        resolve("granted");
         return;
       }
 
-      if (Notification.permission === 'denied') {
-        resolve('denied');
+      if (Notification.permission === "denied") {
+        resolve("denied");
         return;
       }
 
-      resolve('default');
+      resolve("default");
     });
   });
 }

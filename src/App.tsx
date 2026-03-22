@@ -83,20 +83,17 @@ const HomePage: React.FC = () => {
 };
 
 
-// ✅ Main App
+// ✅ MAIN APP
 const App: React.FC = () => {
 
-  // ⭐ OneSignal Init (Push Notification)
-  useEffect(() => {
-    OneSignal.init({
-      appId: "fc73e175-c863-4d14-ae52-6876766384d7",
-      notifyButton: {
-        enable: true,
-      },
-      allowLocalhostAsSecureOrigin: true,
-    });
-  }, []);
-
+  // ⭐ Push Enable Handler (SAFE — SDK already initialized in index.tsx)
+  const enablePushNotifications = async () => {
+    try {
+      await OneSignal.showSlidedownPrompt();
+    } catch (error) {
+      console.log("Push permission error", error);
+    }
+  };
 
   return (
     <Router>
@@ -114,18 +111,6 @@ const App: React.FC = () => {
             padding: "16px",
             fontSize: "14px",
           },
-          success: {
-            iconTheme: {
-              primary: "#22c55e",
-              secondary: "#ffffff",
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: "#ef4444",
-              secondary: "#ffffff",
-            },
-          },
         }}
       />
 
@@ -142,7 +127,8 @@ const App: React.FC = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
 
-        <Footer />
+        {/* ⭐ PASS PUSH FUNCTION TO FOOTER */}
+        <Footer onEnablePush={enablePushNotifications} />
 
         {/* Floating WhatsApp CTA */}
         <a

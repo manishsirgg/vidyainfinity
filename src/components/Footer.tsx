@@ -2,6 +2,7 @@ import React from "react";
 import { Logo, NAV_LINKS, SOCIAL_LINKS } from "../constants";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
+import PushNotifications from "./PushNotifications";
 
 const Footer: React.FC = () => {
   return (
@@ -144,6 +145,8 @@ const Footer: React.FC = () => {
                 Join
               </button>
             </form>
+
+            <PushNotifications />
           </div>
         </div>
 

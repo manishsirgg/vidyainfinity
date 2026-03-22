@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { MessageCircle } from "lucide-react";
-import OneSignal from "react-onesignal";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -83,18 +82,8 @@ const HomePage: React.FC = () => {
 };
 
 
-// ✅ MAIN APP
+// ✅ MAIN APP (FINAL CLEAN VERSION)
 const App: React.FC = () => {
-
-  // ⭐ Push Enable Handler (SAFE — SDK already initialized in index.tsx)
-  const enablePushNotifications = async () => {
-    try {
-      await OneSignal.showSlidedownPrompt();
-    } catch (error) {
-      console.log("Push permission error", error);
-    }
-  };
-
   return (
     <Router>
       <ScrollToTop />
@@ -110,6 +99,18 @@ const App: React.FC = () => {
             borderRadius: "12px",
             padding: "16px",
             fontSize: "14px",
+          },
+          success: {
+            iconTheme: {
+              primary: "#22c55e",
+              secondary: "#ffffff",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#ffffff",
+            },
           },
         }}
       />
@@ -127,8 +128,7 @@ const App: React.FC = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
 
-        {/* ⭐ PASS PUSH FUNCTION TO FOOTER */}
-        <Footer onEnablePush={enablePushNotifications} />
+        <Footer />
 
         {/* Floating WhatsApp CTA */}
         <a

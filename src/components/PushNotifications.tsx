@@ -3,8 +3,8 @@ import toast from 'react-hot-toast';
 import { BellRing } from 'lucide-react';
 
 import {
+  getPushNotificationsSupport,
   isPushNotificationsConfigured,
-  isPushNotificationsSupported,
   requestPushNotifications,
 } from '../lib/oneSignal';
 
@@ -19,10 +19,12 @@ const PushNotifications: React.FC = () => {
       };
     }
 
-    if (!isPushNotificationsSupported()) {
+    const pushSupport = getPushNotificationsSupport();
+
+    if (!pushSupport.enabled) {
       return {
         enabled: false,
-        message: 'This browser does not support web push notifications.',
+        message: pushSupport.reason ?? 'This browser does not support web push notifications.',
       };
     }
 

@@ -8,6 +8,7 @@ This project now supports browser push notifications through OneSignal.
 - **Blog alerts** when you publish a new article.
 - **Marketing campaigns** to all push subscribers or to a specific OneSignal segment.
 - **Server-side broadcast endpoint** for manual sends or CMS/deployment hooks.
+- **Explicit audience selection** so a request cannot accidentally send to all subscribers.
 
 ## Required environment variables
 
@@ -37,6 +38,7 @@ curl -X POST https://vidyainfinity.com/api/push/broadcast \
   -d '{
     "title": "New blog is live",
     "message": "Read our latest guide to studying in Canada in 2026.",
+    "sendToAll": true,
     "url": "https://vidyainfinity.com/blog/study-in-canada-2026"
   }'
 ```
@@ -60,3 +62,4 @@ curl -X POST https://vidyainfinity.com/api/push/broadcast \
 - When a new blog post is merged and deployed, call `/api/push/broadcast` from your release checklist or CI workflow.
 - For campaigns, either use the protected API endpoint above or send the push directly from the OneSignal dashboard.
 - Use OneSignal segments to separate subscribers who want blogs versus marketing messages.
+- The broadcast API requires an explicit audience on every request: `sendToAll`, `segments`, or `filters`.

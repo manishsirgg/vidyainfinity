@@ -12,12 +12,56 @@ declare global {
   }
 }
 
+export type PushSupportState = {
+  enabled: boolean;
+  reason?: string;
+};
+
 let initializationPromise: Promise<void> | null = null;
 
 export const isPushNotificationsConfigured = Boolean(ONESIGNAL_APP_ID);
 
-export function isPushNotificationsSupported() {
-  return typeof window !== 'undefined' && 'Notification' in window;
+export function getPushNotificationsSupport(): PushSupportState {
+  if (typeof window === 'undefined') {
+    return {
+      enabled: false,
+      reason: 'Browser alerts can only be enabled from a web browser.',
+    };
+  }
+
+  if (!window.isSecureContext && window.location.hostname !== 'localhost') {
+    return {
+      enabled: false,
+      reason: 'Push notifications require HTTPS in production.',
+    };
+  }
+
+  if (!('Notification' in window)) {
+    return {
+      enabled: false,
+      reason: 'This browser does not support the Notifications API.',
+    };
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    return {
+      enabled: false,
+      reason: 'This browser does not support service workers.',
+    };
+  }
+
+  if (!('PushManager' in window)) {
+    return {
+      enabled: false,
+      reason: 'This browser does not support the Push API.',
+    };
+  }
+
+  return { enabled: true };
+}
+
+function normalizePermission(value: unknown): NotificationPermission {
+  return value === 'granted' || value === 'denied' ? value : 'default';
 }
 
 function loadOneSignalScript() {
@@ -80,6 +124,12 @@ export async function initializeOneSignal() {
     return false;
   }
 
+  const support = getPushNotificationsSupport();
+
+  if (!support.enabled) {
+    return false;
+  }
+
   if (!initializationPromise) {
     initializationPromise = withOneSignal(async (OneSignal) => {
       await OneSignal.init({
@@ -98,15 +148,19 @@ export async function initializeOneSignal() {
   return true;
 }
 
-export async function requestPushNotifications() {
+export async function requestPushNotifications(): Promise<NotificationPermission> {
   const didInitialize = await initializeOneSignal();
 
   if (!didInitialize) {
-    throw new Error('Push notifications are not configured yet.');
+    throw new Error('Push notifications are not configured or supported yet.');
+  }
+
+  if (Notification.permission === 'granted' || Notification.permission === 'denied') {
+    return Notification.permission;
   }
 
   return withOneSignal(async (OneSignal) => {
     await OneSignal.Notifications.requestPermission();
-    return OneSignal.Notifications.permission ?? Notification.permission;
+    return normalizePermission(Notification.permission);
   });
 }

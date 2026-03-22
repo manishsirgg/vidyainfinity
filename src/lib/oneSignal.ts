@@ -48,23 +48,37 @@ export async function initOneSignal() {
 }
 
 export async function requestPushNotifications(): Promise<
-  "granted" | "denied" | "default" | "already-subscribed"
+  'granted' | 'denied' | 'default' | 'already-subscribed'
 > {
   await initOneSignal();
 
   return new Promise((resolve) => {
     window.OneSignalDeferred.push(async function (OneSignal: any) {
-      const subscribed =
-        await OneSignal.User.PushSubscription.optedIn;
+      // ✅ CHECK IF ALREADY SUBSCRIBED
+      const optedIn = await OneSignal.User.PushSubscription.optedIn;
 
-      if (subscribed) {
-        resolve("already-subscribed");
+      if (optedIn) {
+        resolve('already-subscribed');
         return;
       }
 
+      // ✅ REQUEST PERMISSION
       await OneSignal.Notifications.requestPermission();
 
-      resolve(Notification.permission);
+      // ✅ CHECK AGAIN AFTER PERMISSION
+      const newOptIn = await OneSignal.User.PushSubscription.optedIn;
+
+      if (newOptIn) {
+        resolve('granted');
+        return;
+      }
+
+      if (Notification.permission === 'denied') {
+        resolve('denied');
+        return;
+      }
+
+      resolve('default');
     });
   });
 }

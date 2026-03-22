@@ -136,7 +136,7 @@ export async function initializeOneSignal() {
         appId: ONESIGNAL_APP_ID,
         allowLocalhostAsSecureOrigin: window.location.hostname === 'localhost',
         serviceWorkerPath: '/OneSignalSDKWorker.js',
-        autoRegister: false,
+        autoRegister: true, // ⭐ IMPORTANT FIX
         notifyButton: {
           enable: false,
         },

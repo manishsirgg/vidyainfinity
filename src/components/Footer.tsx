@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
         {/* Top Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
 
-          {/* Brand Section */}
+          {/* Brand */}
           <div className="space-y-6">
             <Logo />
 
@@ -21,7 +21,6 @@ const Footer: React.FC = () => {
               Your path to global academic success starts here.
             </p>
 
-            {/* Social Icons */}
             <div className="flex gap-4">
               <a
                 href={SOCIAL_LINKS.facebook}
@@ -72,7 +71,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Our Focus */}
+          {/* Focus */}
           <div>
             <h4 className="text-slate-900 font-semibold mb-6">
               Our Focus
@@ -114,7 +113,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Newsletter + Push */}
           <div>
             <h4 className="text-slate-900 font-semibold mb-6">
               Stay Updated
@@ -146,11 +145,14 @@ const Footer: React.FC = () => {
               </button>
             </form>
 
-            <PushNotifications />
+            <div className="mt-6">
+              <PushNotifications />
+            </div>
           </div>
+
         </div>
 
-        {/* Bottom Bar */}
+        {/* Bottom */}
         <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400 text-sm">
             © {new Date().getFullYear()} Vidya Infinity [Infinity Global Advisory]. All rights reserved.

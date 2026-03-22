@@ -30,32 +30,37 @@ const PushNotifications: React.FC = () => {
   }, []);
 
   const handleEnableNotifications = useCallback(async () => {
-    if (!supportState.enabled || isSubmitting) return;
+  if (!supportState.enabled || isSubmitting) return;
 
-    setIsSubmitting(true);
+  setIsSubmitting(true);
 
-    try {
-      const permission = await requestPushNotifications();
+  try {
+    const permission = await requestPushNotifications();
 
-      if (permission === 'granted') {
-        toast.success('You are already subscribed to push notifications.');
-        return;
-      }
-
-      if (permission === 'denied') {
-        toast.error('Notifications are blocked in this browser.');
-        return;
-      }
-
-      toast('Permission dismissed.', { icon: '🔔' });
-    } catch (error) {
-      console.error('Push notification setup failed:', error);
-      toast.error('Unable to enable browser alerts right now.');
-    } finally {
-      setIsSubmitting(false);
+    if (permission === 'already-subscribed') {
+      toast.success('Notifications already enabled.');
+      return;
     }
-  }, [isSubmitting, supportState.enabled]);
 
+    if (permission === 'granted') {
+      toast.success('Push notifications enabled successfully.');
+      return;
+    }
+
+    if (permission === 'denied') {
+      toast.error('Notifications are blocked in this browser.');
+      return;
+    }
+
+    toast('Permission dismissed.', { icon: '🔔' });
+  } catch (error) {
+    console.error('Push notification setup failed:', error);
+    toast.error('Unable to enable browser alerts right now.');
+  } finally {
+    setIsSubmitting(false);
+  }
+}, [isSubmitting, supportState.enabled]);
+  
   return (
     <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-start gap-3">

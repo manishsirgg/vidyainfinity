@@ -15,7 +15,8 @@ const PushNotifications: React.FC = () => {
     if (!isPushNotificationsConfigured) {
       return {
         enabled: false,
-        message: 'Browser alerts will go live after the OneSignal keys are added in Vercel.',
+        message:
+          'Browser alerts will go live after the OneSignal keys are added in Vercel.',
       };
     }
 
@@ -24,25 +25,32 @@ const PushNotifications: React.FC = () => {
     if (!pushSupport.enabled) {
       return {
         enabled: false,
-        message: pushSupport.reason ?? 'This browser does not support web push notifications.',
+        message:
+          pushSupport.reason ??
+          'This browser does not support web push notifications.',
       };
     }
 
     return {
       enabled: true,
-      message: 'Enable browser alerts for new blogs, application deadlines, and marketing campaigns.',
+      message:
+        'Enable browser alerts for new blogs, application deadlines, and marketing campaigns.',
     };
   }, []);
 
   const handleEnableNotifications = useCallback(async () => {
-    if (!supportState.enabled || isSubmitting) {
-      return;
-    }
+    if (!supportState.enabled || isSubmitting) return;
 
     setIsSubmitting(true);
 
     try {
       const permission = await requestPushNotifications();
+
+      // ⭐ MOST IMPORTANT FIX
+      if (permission === 'already-subscribed') {
+        toast.success('Notifications already enabled on this device.');
+        return;
+      }
 
       if (permission === 'granted') {
         toast.success('Push notifications enabled successfully.');

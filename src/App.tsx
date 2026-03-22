@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { MessageCircle } from "lucide-react";
+import OneSignal from "react-onesignal";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -84,6 +85,19 @@ const HomePage: React.FC = () => {
 
 // ✅ Main App
 const App: React.FC = () => {
+
+  // ⭐ OneSignal Init (Push Notification)
+  useEffect(() => {
+    OneSignal.init({
+      appId: "fc73e175-c863-4d14-ae52-6876766384d7",
+      notifyButton: {
+        enable: true,
+      },
+      allowLocalhostAsSecureOrigin: true,
+    });
+  }, []);
+
+
   return (
     <Router>
       <ScrollToTop />

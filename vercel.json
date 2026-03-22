@@ -1,8 +1,18 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/((?!assets|favicon.ico|robots.txt|manifest.json|OneSignalSDKWorker.js|OneSignalSDKUpdaterWorker.js).*)",
-      "destination": "/index.html"
+      "src": "/OneSignalSDKWorker.js",
+      "headers": { "cache-control": "no-cache" },
+      "dest": "/OneSignalSDKWorker.js"
+    },
+    {
+      "src": "/OneSignalSDKUpdaterWorker.js",
+      "headers": { "cache-control": "no-cache" },
+      "dest": "/OneSignalSDKUpdaterWorker.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }

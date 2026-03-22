@@ -2,32 +2,23 @@ import React, { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { BellRing } from 'lucide-react';
 
-import {
-  getPushNotificationsSupport,
-  isPushNotificationsConfigured,
-  requestPushNotifications,
-} from '../lib/oneSignal';
+import { requestPushNotifications } from '../lib/oneSignal';
 
 const PushNotifications: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const supportState = useMemo(() => {
-    if (!isPushNotificationsConfigured) {
+    if (typeof window === 'undefined') {
       return {
         enabled: false,
-        message:
-          'Browser alerts will go live after the OneSignal keys are added in Vercel.',
+        message: 'Push notifications are only available in browser.',
       };
     }
 
-    const pushSupport = getPushNotificationsSupport();
-
-    if (!pushSupport.enabled) {
+    if (!('Notification' in window)) {
       return {
         enabled: false,
-        message:
-          pushSupport.reason ??
-          'This browser does not support web push notifications.',
+        message: 'This browser does not support notifications.',
       };
     }
 
@@ -46,14 +37,8 @@ const PushNotifications: React.FC = () => {
     try {
       const permission = await requestPushNotifications();
 
-      // ⭐ MOST IMPORTANT FIX
-      if (permission === 'already-subscribed') {
-        toast.success('Notifications already enabled on this device.');
-        return;
-      }
-
       if (permission === 'granted') {
-        toast.success('Push notifications enabled successfully.');
+        toast.success('You are already subscribed to push notifications.');
         return;
       }
 
@@ -62,9 +47,7 @@ const PushNotifications: React.FC = () => {
         return;
       }
 
-      toast('Notification permission was dismissed.', {
-        icon: '🔔',
-      });
+      toast('Permission dismissed.', { icon: '🔔' });
     } catch (error) {
       console.error('Push notification setup failed:', error);
       toast.error('Unable to enable browser alerts right now.');

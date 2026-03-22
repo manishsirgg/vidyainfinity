@@ -1,32 +1,10 @@
 {
   "rewrites": [
-    {
-      "source": "/OneSignalSDKWorker.js",
-      "destination": "/OneSignalSDKWorker.js"
-    },
-    {
-      "source": "/OneSignalSDKUpdaterWorker.js",
-      "destination": "/OneSignalSDKUpdaterWorker.js"
-    },
-    {
-      "source": "/assets/(.*)",
-      "destination": "/assets/$1"
-    },
-    {
-      "source": "/favicon.ico",
-      "destination": "/favicon.ico"
-    },
-    {
-      "source": "/robots.txt",
-      "destination": "/robots.txt"
-    },
-    {
-      "source": "/manifest.json",
-      "destination": "/manifest.json"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/OneSignalSDKWorker.js", "destination": "/OneSignalSDKWorker.js" },
+    { "source": "/OneSignalSDKUpdaterWorker.js", "destination": "/OneSignalSDKUpdaterWorker.js" },
+    { "source": "/manifest.json", "destination": "/manifest.json" },
+    { "source": "/robots.txt", "destination": "/robots.txt" },
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

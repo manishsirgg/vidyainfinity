@@ -7,6 +7,10 @@
     {
       "src": "/OneSignalSDKUpdaterWorker.js",
       "dest": "/OneSignalSDKUpdaterWorker.js"
+    },
+    {
+      "src": "/OneSignalSDK.sw.js",
+      "dest": "/OneSignalSDK.sw.js"
     }
   ]
 }

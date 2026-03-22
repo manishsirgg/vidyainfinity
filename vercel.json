@@ -1,18 +1,32 @@
 {
-  "routes": [
+  "rewrites": [
     {
-      "src": "/OneSignalSDKWorker.js",
-      "headers": { "cache-control": "no-cache" },
-      "dest": "/OneSignalSDKWorker.js"
+      "source": "/OneSignalSDKWorker.js",
+      "destination": "/OneSignalSDKWorker.js"
     },
     {
-      "src": "/OneSignalSDKUpdaterWorker.js",
-      "headers": { "cache-control": "no-cache" },
-      "dest": "/OneSignalSDKUpdaterWorker.js"
+      "source": "/OneSignalSDKUpdaterWorker.js",
+      "destination": "/OneSignalSDKUpdaterWorker.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/assets/(.*)",
+      "destination": "/assets/$1"
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/robots.txt"
+    },
+    {
+      "source": "/manifest.json",
+      "destination": "/manifest.json"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }

@@ -1,0 +1,46 @@
+name: Auto Push on Blog Publish
+
+on:
+  push:
+    paths:
+      - "src/content/blogs/**"
+
+jobs:
+  send-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Extract Blog File
+        id: blog
+        run: |
+          FILE=$(git diff --name-only HEAD~1 HEAD | grep "src/content/blogs/" | tail -n 1)
+          echo "file=$FILE" >> $GITHUB_OUTPUT
+
+      - name: Extract Blog Title
+        id: title
+        run: |
+          TITLE=$(grep -m 1 "^title:" ${{ steps.blog.outputs.file }} | sed 's/title: //')
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+
+      - name: Extract Slug
+        id: slug
+        run: |
+          SLUG=$(basename ${{ steps.blog.outputs.file }} .md)
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
+      - name: Send Push
+        run: |
+          curl --request POST \
+          --url https://onesignal.com/api/v1/notifications \
+          --header "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
+          --header "Content-Type: application/json" \
+          --data '{
+            "app_id": "${{ secrets.ONESIGNAL_APP_ID }}",
+            "included_segments": ["Subscribed Users"],
+            "headings": {"en": "New Blog Published"},
+            "contents": {"en": "'"${{ steps.title.outputs.title }}"'"},
+            "url": "https://vidyainfinity.com/blog/'"${{ steps.slug.outputs.slug }}"'"
+          }'

@@ -3,7 +3,7 @@ name: Auto Push on Blog Publish
 on:
   push:
     paths:
-      - "src/content/blogs/**"
+      - "src/content/blog/**"
 
 jobs:
   send-push:
@@ -13,10 +13,10 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Extract Blog File
+      - name: Get Latest Blog File
         id: blog
         run: |
-          FILE=$(git diff --name-only HEAD~1 HEAD | grep "src/content/blogs/" | tail -n 1)
+          FILE=$(git diff --name-only HEAD~1 HEAD | grep "src/content/blog/" | tail -n 1)
           echo "file=$FILE" >> $GITHUB_OUTPUT
 
       - name: Extract Blog Title
@@ -31,7 +31,7 @@ jobs:
           SLUG=$(basename ${{ steps.blog.outputs.file }} .md)
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      - name: Send Push
+      - name: Send OneSignal Push
         run: |
           curl --request POST \
           --url https://onesignal.com/api/v1/notifications \
@@ -40,7 +40,7 @@ jobs:
           --data '{
             "app_id": "${{ secrets.ONESIGNAL_APP_ID }}",
             "included_segments": ["Subscribed Users"],
-            "headings": {"en": "New Blog Published"},
+            "headings": {"en": "New Blog Published 🎓"},
             "contents": {"en": "'"${{ steps.title.outputs.title }}"'"},
             "url": "https://vidyainfinity.com/blog/'"${{ steps.slug.outputs.slug }}"'"
           }'

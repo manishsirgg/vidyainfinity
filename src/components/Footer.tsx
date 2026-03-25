@@ -1,10 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import { Logo, NAV_LINKS, SOCIAL_LINKS } from "../constants";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import PushNotifications from "./PushNotifications";
 
 const Footer: React.FC = () => {
+
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+
+  const handleNewsletter = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setNewsletterLoading(true);
+
+    try {
+      const res = await fetch("/api/lead-capture", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: newsletterEmail,
+          service: "newsletter",
+          source: "footer_newsletter",
+        }),
+      });
+
+      if (res.ok) {
+        alert("Subscribed successfully!");
+        setNewsletterEmail("");
+      } else {
+        alert("Subscription failed.");
+      }
+    } catch {
+      alert("Error occurred.");
+    }
+
+    setNewsletterLoading(false);
+  };
+
   return (
     <footer className="bg-slate-50 border-t border-slate-200 pt-20 pb-8">
       <div className="container mx-auto px-4 md:px-8">
@@ -123,25 +157,22 @@ const Footer: React.FC = () => {
               Get the latest international education news and admission dates.
             </p>
 
-            <form
-              action="https://vidyainfinity.us17.list-manage.com/subscribe/post?u=e33a04cb75cf3c89dfbd60661&id=b1f5423d14&f_id=00a903e0f0"
-              method="POST"
-              target="_blank"
-              className="flex w-full"
-            >
+            <form onSubmit={handleNewsletter} className="flex w-full">
               <input
                 type="email"
-                name="EMAIL"
-                placeholder="Email Address"
                 required
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                placeholder="Email Address"
                 className="bg-white border border-slate-300 rounded-l-lg px-4 py-2 w-full text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
               />
 
               <button
                 type="submit"
+                disabled={newsletterLoading}
                 className="bg-blue-900 text-white px-5 py-2 rounded-r-lg hover:bg-blue-800 transition-all text-sm font-semibold"
               >
-                Join
+                {newsletterLoading ? "Joining..." : "Join"}
               </button>
             </form>
 

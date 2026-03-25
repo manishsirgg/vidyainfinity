@@ -53,89 +53,72 @@ const Contact: React.FC = () => {
             </h3>
 
             <form
-  onSubmit={async (e) => {
-    e.preventDefault();
+              onSubmit={async (e) => {
+                e.preventDefault();
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+                const form = e.currentTarget;
+                const formData = new FormData(form);
 
-    const response = await fetch('/api/mailchimp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+                const payload = {
+                  name: formData.get("name"),
+                  email: formData.get("email"),
+                  phone: formData.get("phone"),
+                  service: formData.get("service"),
+                  message: formData.get("message"),
+                  source: "admission_form",
+                };
 
-    if (response.ok) {
-      toast.success("Inquiry submitted successfully!", {
-  duration: 4000,
-});
-      form.reset();
-    } else {
-      toast.error("Something went wrong. Please try again.", {
-  duration: 4000,
-});
-    }
-  }}
-  className="space-y-6"
->
-              {/* Hidden Subject for Better Email Labeling */}
-              <input
-                type="hidden"
-                name="_subject"
-                value="New Admission Enquiry - Vidya Infinity"
-              />
+                try {
+                  const response = await fetch('/api/lead-capture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                  });
+
+                  if (response.ok) {
+                    toast.success("Inquiry submitted successfully!", {
+                      duration: 4000,
+                    });
+                    form.reset();
+                  } else {
+                    toast.error("Something went wrong. Please try again.", {
+                      duration: 4000,
+                    });
+                  }
+                } catch (err) {
+                  toast.error("Network error. Please try again.", {
+                    duration: 4000,
+                  });
+                }
+              }}
+              className="space-y-6"
+            >
+
+              <input type="hidden" name="_subject" value="New Admission Enquiry - Vidya Infinity" />
 
               {/* Name + Email */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-sm font-bold uppercase">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  />
+                  <label className="text-sm font-bold uppercase">Full Name</label>
+                  <input type="text" name="name" required className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
                 </div>
 
                 <div>
-                  <label className="text-sm font-bold uppercase">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  />
+                  <label className="text-sm font-bold uppercase">Email Address</label>
+                  <input type="email" name="email" required className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
                 </div>
               </div>
 
               {/* Phone */}
               <div>
-                <label className="text-sm font-bold uppercase">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  required
-                  className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                />
+                <label className="text-sm font-bold uppercase">Phone Number</label>
+                <input type="tel" name="phone" required className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
               </div>
 
               {/* Service */}
               <div>
-                <label className="text-sm font-bold uppercase">
-                  Interested Service
-                </label>
-                <select
-                  name="service"
-                  required
-                  className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                >
+                <label className="text-sm font-bold uppercase">Interested Service</label>
+                <select name="service" required className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600">
                   <option value="">Select a Service</option>
                   <option>University Admissions</option>
                   <option>Visa Guidance</option>
@@ -147,25 +130,15 @@ const Contact: React.FC = () => {
 
               {/* Message */}
               <div>
-                <label className="text-sm font-bold uppercase">
-                  Your Message
-                </label>
-                <textarea
-                  name="message"
-                  rows={4}
-                  required
-                  className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                />
+                <label className="text-sm font-bold uppercase">Your Message</label>
+                <textarea name="message" rows={4} required className="w-full mt-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
               </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 shadow-lg transition-all active:scale-95"
-              >
+              <button type="submit" className="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 shadow-lg transition-all active:scale-95">
                 Book Free Consultation
                 <Send size={18} />
               </button>
+
             </form>
           </div>
         </div>
